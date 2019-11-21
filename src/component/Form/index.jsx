@@ -22,16 +22,18 @@ export default function StepForm({ price, currency }) {
 
   useEffect(() => {
     const step = parseInt(localStorage.getItem('formStep') || 1)
-    const formValues = JSON.parse(localStorage.getItem('formData') || '{}')
+    const formValues = JSON.parse(
+      localStorage.getItem('formData') || JSON.stringify(formData)
+    )
     setFormStep(step)
     setData(formValues)
-  }, [])
+  },[])
 
   useEffect(() => {
     localStorage.setItem('formData', JSON.stringify(formData))
   }, [formData])
 
-  const onValidate = (form) => {
+  const onValidate = form => {
     const errors = []
     for (const formVal of Object.keys(form)) {
       switch (formVal) {
