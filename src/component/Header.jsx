@@ -5,7 +5,7 @@ import Navbar from 'react-bootstrap/Navbar'
 export default function Header() {
   return (
     <Navbar bg="dark">
-      <Navbar.Brand href="#home">
+      <Navbar.Brand>
         <img
           src={logo}
           width="30"

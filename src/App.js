@@ -1,4 +1,5 @@
 import React from 'react'
+import './App.css'
 import Container from 'react-bootstrap/Container'
 import Layout from './component/Layout'
 import StepForm from './component/Form'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
@@ -15,10 +15,24 @@ export default function StepForm({ price, currency }) {
   const [quantity, setQuantity] = useState(1)
   const [formStep, setFormStep] = useState(1)
   const [isActive, setLoading] = useState(false)
+  const [formData, setData] = useState({})
   const [status, setStatus] = useState('')
+  const [error, setError] = useState([])
   const paymentStatus = ['success', 'failure']
 
+  useEffect(() => {
+    const step = parseInt(localStorage.getItem('formStep') || 1)
+    const formValues = JSON.parse(localStorage.getItem('formData') || '{}')
+    setFormStep(step)
+    setData(formValues)
+  }, [])
+
+  useEffect(() => {
+    return () => localStorage.setItem('formData', JSON.stringify(formData))
+  }, [formData])
+
   const handleButtonClick = event => {
+    const step = formStep + 1
     if (
       event.target.innerText === 'Book' ||
       event.target.innerText === 'Retry'
@@ -31,7 +45,8 @@ export default function StepForm({ price, currency }) {
         setLoading(false)
       }, 3000)
     } else {
-      setFormStep(formStep + 1)
+      setFormStep(step)
+      localStorage.setItem('formStep', step)
     }
   }
 
@@ -43,6 +58,10 @@ export default function StepForm({ price, currency }) {
     } else {
       return 'Next'
     }
+  }
+
+  const handleChange = event => {
+    setData({ ...formData, [event.target.name]: event.target.value })
   }
 
   return (
@@ -61,21 +80,34 @@ export default function StepForm({ price, currency }) {
                   <div>
                     <span>Number of bags</span>{' '}
                     <Button
-                      onClick={() =>
-                        quantity > 0
-                          ? setQuantity(quantity - 1)
-                          : setQuantity(quantity)
-                      }
+                      className="btn-xs"
+                      disabled={quantity <= 1}
+                      onClick={() => setQuantity(quantity - 1)}
                     >
                       -
                     </Button>{' '}
                     {quantity}{' '}
-                    <Button onClick={() => setQuantity(quantity + 1)}>+</Button>{' '}
+                    <Button
+                      className="btn-xs"
+                      onClick={() => setQuantity(quantity + 1)}
+                    >
+                      +
+                    </Button>{' '}
                   </div>
                 </Card.Body>
               </Card>
-              {formStep > 1 && <PersonalDetails />}
-              {formStep > 2 && <PaymentDetails />}
+              {formStep > 1 && (
+                <PersonalDetails
+                  handleChange={handleChange}
+                  formData={formData}
+                />
+              )}
+              {formStep > 2 && (
+                <PaymentDetails
+                  handleChange={handleChange}
+                  formData={formData}
+                />
+              )}
               <hr />
               <Row>
                 <Col lg={6} className="text-left">

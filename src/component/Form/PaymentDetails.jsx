@@ -1,15 +1,21 @@
 import React from 'react'
 import Form from 'react-bootstrap/Form'
 
-export default function PaymentDetails() {
+export default function PaymentDetails({ handleChange, formData }) {
   return (
-    <>
+    <div className="mt-5">
       <h5>Payment Information:</h5>
       <Form.Group controlId="cardDetails">
         <Form.Label>Card Details</Form.Label>
-        <Form.Control type="text" placeholder="Enter your card number" />
+        <Form.Control
+          onChange={handleChange}
+          name="cardDetail"
+          size="sm"
+          type="number"
+          placeholder="Enter your card number"
+          value={formData.cardDetail}
+        />
       </Form.Group>
-      <hr />
-    </>
+    </div>
   )
 }
