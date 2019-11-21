@@ -1,7 +1,12 @@
 import React from 'react'
 import Form from 'react-bootstrap/Form'
 
-export default function PersonalDetails({ handleChange, formData }) {
+export default function PersonalDetails({
+  handleChange,
+  formData,
+  errorName,
+  errorEmail
+}) {
   return (
     <div className="mt-5">
       <h5>Personal Details:</h5>
@@ -15,6 +20,11 @@ export default function PersonalDetails({ handleChange, formData }) {
           placeholder="Enter your name"
           value={formData.name}
         />
+        {errorName.map((err, index) => (
+          <span key={index} className="error">
+            *{err.error}
+          </span>
+        ))}
       </Form.Group>
       <Form.Group controlId="Email">
         <Form.Label>Email</Form.Label>
@@ -26,6 +36,11 @@ export default function PersonalDetails({ handleChange, formData }) {
           placeholder="Enter your email"
           value={formData.email}
         />
+        {errorEmail.map((err, index) => (
+          <span key={index} className="error">
+            *{err.error}
+          </span>
+        ))}
       </Form.Group>
       <hr />
     </div>

@@ -3,3 +3,8 @@
   background: grey;
   height: 100px;
 }
+
+.error {
+  color: red;
+  font-size: 10px;
+}

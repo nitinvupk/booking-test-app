@@ -15,9 +15,9 @@ export default function StepForm({ price, currency }) {
   const [quantity, setQuantity] = useState(1)
   const [formStep, setFormStep] = useState(1)
   const [isActive, setLoading] = useState(false)
-  const [formData, setData] = useState({})
+  const [formData, setData] = useState({ cardDetail: '', name: '', email: '' })
   const [status, setStatus] = useState('')
-  const [error, setError] = useState([])
+  const [errors, setError] = useState([])
   const paymentStatus = ['success', 'failure']
 
   useEffect(() => {
@@ -28,8 +28,40 @@ export default function StepForm({ price, currency }) {
   }, [])
 
   useEffect(() => {
-    return () => localStorage.setItem('formData', JSON.stringify(formData))
+    localStorage.setItem('formData', JSON.stringify(formData))
   }, [formData])
+
+  const onValidate = (form) => {
+    const errors = []
+    for (const formVal of Object.keys(form)) {
+      switch (formVal) {
+        case 'cardDetail':
+          if (!form['cardDetail']) {
+            errors.push({ name: formVal, error: 'Card Details are required' })
+          }
+          break
+        case 'name':
+          if (!form['name']) {
+            errors.push({ name: formVal, error: 'Name is required' })
+          }
+          break
+        case 'email':
+          const regex = /\S+@\S+\.\S+/
+          if (!form['email']) {
+            errors.push({ name: formVal, error: 'Email is required' })
+          } else if (!regex.test(form['email'])) {
+            errors.push({
+              name: formVal,
+              error: 'Email should be in correct format'
+            })
+          }
+          break
+        default:
+      }
+    }
+    setError(errors)
+    return errors.length === 0
+  }
 
   const handleButtonClick = event => {
     const step = formStep + 1
@@ -37,13 +69,15 @@ export default function StepForm({ price, currency }) {
       event.target.innerText === 'Book' ||
       event.target.innerText === 'Retry'
     ) {
-      setLoading(true)
-      const status =
-        paymentStatus[Math.floor(Math.random() * paymentStatus.length)]
-      setTimeout(() => {
-        setStatus(status)
-        setLoading(false)
-      }, 3000)
+      if (onValidate(formData)) {
+        setLoading(true)
+        const status =
+          paymentStatus[Math.floor(Math.random() * paymentStatus.length)]
+        setTimeout(() => {
+          setStatus(status)
+          setLoading(false)
+        }, 3000)
+      }
     } else {
       setFormStep(step)
       localStorage.setItem('formStep', step)
@@ -99,12 +133,15 @@ export default function StepForm({ price, currency }) {
               {formStep > 1 && (
                 <PersonalDetails
                   handleChange={handleChange}
+                  errorName={errors.filter(k => k.name === 'name')}
+                  errorEmail={errors.filter(k => k.name === 'email')}
                   formData={formData}
                 />
               )}
               {formStep > 2 && (
                 <PaymentDetails
                   handleChange={handleChange}
+                  error={errors.filter(k => k.name === 'cardDetail')}
                   formData={formData}
                 />
               )}
